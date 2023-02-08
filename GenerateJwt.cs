@@ -11,7 +11,7 @@ public static class AccessToken
         try
         {
             string jwt = GenerateJwt( privateKey, privatekeyId, serviceAccountEmail, scope);
-            return await ExchangeTokenAsync(jwt, "https://www.googleapis.com/oauth2/v4/token");
+            return await ExchangeTokenAsync(jwt);
         }
         catch (Exception ex)
         {
