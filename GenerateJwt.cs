@@ -101,9 +101,9 @@ public static class AccessToken
     }
 
 
-    public static async Task<string> ExchangeTokenAsync(string jwt, string authUri)
+    public static async Task<string> ExchangeTokenAsync(string jwt)
     {
-        string authUrl = authUri;
+        string authUrl = "https://www.googleapis.com/oauth2/v4/token";
         var client = new System.Net.Http.HttpClient();
         var content = new StringContent(JsonConvert.SerializeObject(
             new
