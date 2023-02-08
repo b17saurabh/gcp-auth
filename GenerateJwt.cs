@@ -6,12 +6,12 @@ using Newtonsoft.Json;
 namespace gcp_auth;
 public static class AccessToken
 {
-    public static async Task<string> GetAccessTokenAsync(string privateKey, string privatekeyId, string serviceAccountEmail, string scope, string secret)
+    public static async Task<string> GetAccessTokenAsync(string privateKey, string privatekeyId, string serviceAccountEmail, string scope)
     {
         try
         {
-            string jwt = GenerateJwt( privateKey, privatekeyId, serviceAccountEmail, scope, secret);
-            return await GetAccessTokenAsync(jwt, "https://www.googleapis.com/oauth2/v4/token");
+            string jwt = GenerateJwt( privateKey, privatekeyId, serviceAccountEmail, scope);
+            return await ExchangeTokenAsync(jwt, "https://www.googleapis.com/oauth2/v4/token");
         }
         catch (Exception ex)
         {
@@ -19,7 +19,7 @@ public static class AccessToken
         }
 
     }
-    public static string GenerateJwt(string privateKey, string privatekeyId, string serviceAccountEmail, string scope, string secret)
+    public static string GenerateJwt(string privateKey, string privatekeyId, string serviceAccountEmail, string scope)
     {
         int issued = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
         int expires = issued + 3600;
@@ -28,7 +28,7 @@ public static class AccessToken
 
         var payload = GetPayload(serviceAccountEmail, scope, issued, expires);
 
-        var privateKeybyteArray = ReadPrivateKey(secret);
+        var privateKeybyteArray = ReadPrivateKey(privateKey);
 
         var jwt = EncodeRSA(header, payload, privateKeybyteArray);
         return jwt;
@@ -101,7 +101,7 @@ public static class AccessToken
     }
 
 
-    private static async Task<string> GetAccessTokenAsync(string jwt, string authUri)
+    public static async Task<string> ExchangeTokenAsync(string jwt, string authUri)
     {
         string authUrl = authUri;
         var client = new System.Net.Http.HttpClient();
